@@ -46,9 +46,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Feeldown/Drug_PhamacyApp.git"
+    "url": "https://github.com/Feeldown/Phamacy-ocr-app.git"
   },
-  "homepage": "https://drug-phamacy-app.vercel.app",
+  "homepage": "https://drug-label-ocr.onrender.com",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
