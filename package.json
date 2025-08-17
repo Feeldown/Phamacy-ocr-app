@@ -1,0 +1,56 @@
+{
+  "name": "drug-label-ocr",
+  "version": "1.0.0",
+  "description": "ระบบช่วยค้นหาและวิเคราะห์ข้อมูลยาในประเทศไทย ด้วย OCR และ AI",
+  "type": "module",
+  "main": "src/main.tsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "start": "vite preview",
+    "render-build": "npm install && npm run build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.13",
+    "@mui/icons-material": "^5.15.13",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.22.3",
+    "tesseract.js": "^5.0.5",
+    "react-webcam": "^7.2.0",
+    "react-dropzone": "^14.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.4.2",
+    "vite": "^7.1.2"
+  },
+  "keywords": [
+    "ยา",
+    "pharmacy",
+    "ocr",
+    "thai",
+    "medicine",
+    "ai",
+    "react",
+    "typescript",
+    "tesseract"
+  ],
+  "author": "Feeldown",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Feeldown/Drug_PhamacyApp.git"
+  },
+  "homepage": "https://drug-phamacy-app.vercel.app",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

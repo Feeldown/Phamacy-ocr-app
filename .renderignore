@@ -1,0 +1,38 @@
+# Development files
+node_modules/
+.vite/
+*.log
+npm-debug.log*
+
+# Source maps
+*.map
+
+# Test files
+test_model/
+*.test.*
+*.spec.*
+
+# Python files
+*.py
+__pycache__/
+*.pyc
+
+# Data files (keep only essential)
+drug_full_details.*
+drug_backup.xlsx
+chromedriver.exe
+Picture/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
