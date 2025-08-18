@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createWorker } from 'tesseract.js';
-import { Box, CircularProgress, Typography, Paper } from '@mui/material';
+import { Box, CircularProgress, Typography, Paper, Chip, Stack } from '@mui/material';
 
 interface OCRProcessorProps {
   imageSrc: string;
@@ -11,6 +11,7 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
   const [progress, setProgress] = useState<number>(0);
   const [error, setError] = useState<string>('');
   const [status, setStatus] = useState<string>('กำลังเริ่มต้น...');
+  const [currentLanguage, setCurrentLanguage] = useState<string>('');
 
   const isImageTooDark = (imageData: ImageData, threshold = 40): boolean => {
     let total = 0;
@@ -44,8 +45,8 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
         const data = imageData.data;
         for (let i = 0; i < data.length; i += 4) {
           const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-          // เพิ่ม contrast
-          const contrast = 1.2; // ปรับค่าตามต้องการ
+          // เพิ่ม contrast สำหรับภาษาไทย
+          const contrast = 1.3; // เพิ่ม contrast สำหรับตัวอักษรไทย
           const contrasted = (avg - 128) * contrast + 128;
           data[i] = data[i + 1] = data[i + 2] = Math.max(0, Math.min(255, contrasted));
         }
@@ -57,16 +58,63 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
     });
   };
 
-  // Mock OCR สำหรับทดสอบ (fallback)
+  // Mock OCR สำหรับทดสอบ (fallback) - รองรับภาษาไทย
   const mockOCR = async (imageSrc: string): Promise<string> => {
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Return mock text based on image (for testing)
-    return `ยา Paracetamol 500mg
+    // Return mock text ภาษาไทย (for testing)
+    return `ยา พาราเซตามอล 500 มิลลิกรัม
     ใช้สำหรับ: ลดไข้ แก้ปวด
     วิธีใช้: รับประทาน 1-2 เม็ด ทุก 4-6 ชั่วโมง
-    ข้อควรระวัง: ไม่ควรใช้ติดต่อกันนานเกินไป`;
+    ข้อควรระวัง: ไม่ควรใช้ติดต่อกันนานเกินไป
+    ผลิตโดย: บริษัท ไทยโอทซูก้า จำกัด
+    วันที่ผลิต: 01/01/2024
+    วันหมดอายุ: 01/01/2027`;
+  };
+
+  // ฟังก์ชันสำหรับ OCR ด้วยภาษาไทย
+  const performThaiOCR = async (worker: any, imageSrc: string): Promise<string> => {
+    try {
+      setCurrentLanguage('ไทย + อังกฤษ');
+      setStatus('กำลังโหลดภาษาไทยและอังกฤษ...');
+      
+      // ลองโหลดภาษาไทย + อังกฤษ
+      await worker.reinitialize('tha+eng');
+      
+      setStatus('กำลังอ่านข้อความภาษาไทย...');
+      const { data: { text } } = await worker.recognize(imageSrc);
+      
+      return text;
+    } catch (thaiError) {
+      console.log('Thai+English failed, trying Thai only:', thaiError);
+      
+      try {
+        setCurrentLanguage('ไทย');
+        setStatus('กำลังโหลดภาษาไทย...');
+        
+        // ลองโหลดเฉพาะภาษาไทย
+        await worker.reinitialize('tha');
+        
+        setStatus('กำลังอ่านข้อความภาษาไทย...');
+        const { data: { text } } = await worker.recognize(imageSrc);
+        
+        return text;
+      } catch (thaiOnlyError) {
+        console.log('Thai only failed, trying English:', thaiOnlyError);
+        
+        setCurrentLanguage('อังกฤษ');
+        setStatus('กำลังโหลดภาษาอังกฤษ...');
+        
+        // ลองโหลดภาษาอังกฤษ
+        await worker.reinitialize('eng');
+        
+        setStatus('กำลังอ่านข้อความภาษาอังกฤษ...');
+        const { data: { text } } = await worker.recognize(imageSrc);
+        
+        return text;
+      }
+    }
   };
 
   React.useEffect(() => {
@@ -88,42 +136,18 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
         setStatus('กำลังเริ่มต้น OCR...');
 
         try {
-          // Try to create Tesseract worker
+          // สร้าง Tesseract worker
           const worker = await createWorker();
 
           setProgress(60);
-          setStatus('กำลังโหลดภาษา...');
-
-          // Try to load languages (with fallback)
-          try {
-            await worker.reinitialize('eng');
-            setStatus('กำลังอ่านข้อความ...');
-          } catch (langError) {
-            console.log('Language loading failed, using English only:', langError);
-            // Fallback to English only
-            try {
-              await worker.reinitialize('eng');
-            } catch (fallbackError) {
-              console.log('Fallback failed, using mock OCR:', fallbackError);
-              // Use mock OCR as last resort
-              const mockResult = await mockOCR(processedImage);
-              if (isMounted) {
-                onResult(mockResult);
-              }
-              return;
-            }
-          }
-
-          setProgress(90);
-          setStatus('กำลังประมวลผลข้อความ...');
-
-          // Perform OCR
-          const { data: { text } } = await worker.recognize(processedImage);
+          
+          // ทำ OCR ด้วยภาษาไทย
+          const result = await performThaiOCR(worker, processedImage);
           
           if (isMounted) {
             setProgress(100);
             setStatus('เสร็จสิ้น');
-            onResult(text);
+            onResult(result);
           }
 
           await worker.terminate();
@@ -158,6 +182,17 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
         <Typography variant="h6" color="primary">
           กำลังประมวลผลภาพ
         </Typography>
+        
+        {currentLanguage && (
+          <Stack direction="row" spacing={1}>
+            <Chip 
+              label={`ภาษา: ${currentLanguage}`} 
+              color="primary" 
+              variant="outlined"
+              size="small"
+            />
+          </Stack>
+        )}
         
         <CircularProgress 
           variant="determinate" 

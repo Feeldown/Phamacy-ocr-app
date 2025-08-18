@@ -10,7 +10,8 @@
 * ✅ **Responsive Design** - ปรับปรุง UI/UX ให้สวยงามและใช้งานง่าย
 * ✅ **Fallback System** - OCR มี fallback system สำหรับกรณีที่ไม่มีไฟล์ภาษา
 * ✅ **TypeScript Support** - ใช้ TypeScript อย่างเต็มรูปแบบ
-* ✅ **Ready for Deployment** - เตรียมพร้อมสำหรับ deployment บน Render และ Vercel
+* ✅ **Ready for Deployment** - เตรียมพร้อมสำหรับ deployment บน Vercel และ Render
+* ✅ **Vercel Migration** - ย้ายจาก Render ไป Vercel เพื่อ performance ที่ดีกว่า
 
 ## ✨ ฟีเจอร์หลัก
 
@@ -54,8 +55,8 @@
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/Feeldown/Drug_PhamacyApp.git
-cd Drug_PhamacyApp/drug-label-ocr
+git clone https://github.com/Feeldown/Phamacy-ocr-app.git
+cd Phamacy-ocr-app
 ```
 
 ### 2. ติดตั้ง Dependencies
@@ -97,7 +98,7 @@ npm run dev
 ## 🏗️ โครงสร้างโปรเจค
 
 ```
-drug-label-ocr/
+Phamacy-ocr-app/
 ├── src/
 │   ├── components/          # React Components
 │   │   ├── Layout/         # Layout Components
@@ -119,13 +120,27 @@ drug-label-ocr/
 ├── package.json            # Dependencies
 ├── vite.config.ts          # Vite Configuration
 ├── tsconfig.json           # TypeScript Configuration
-├── render.yaml             # Render Deployment Config
-└── vercel.json             # Vercel Deployment Config
+├── vercel.json             # Vercel Deployment Config
+└── render.yaml             # Render Deployment Config (backup)
 ```
 
 ## 🚀 การ Deploy
 
-### Render (แนะนำ)
+### Vercel (แนะนำ - Performance ดีที่สุด)
+
+1. **Fork repository** นี้ไปยัง GitHub ของคุณ
+2. **เข้า [Vercel Dashboard](https://vercel.com/dashboard)**
+3. **กด "New Project"**
+4. **Import จาก GitHub repository**
+5. **ตั้งค่า:**
+   - **Framework Preset:** Vite
+   - **Root Directory:** `./`
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+6. **กด "Deploy"**
+7. **ได้ลิงก์เว็บทันที!**
+
+### Render (ทางเลือก)
 
 1. **Fork repository** นี้ไปยัง GitHub ของคุณ
 2. **เข้า [Render Dashboard](https://dashboard.render.com/)**
@@ -133,28 +148,21 @@ drug-label-ocr/
 4. **เชื่อมต่อกับ GitHub repository**
 5. **ตั้งค่า:**
    - **Name:** `drug-label-ocr`
-   - **Root Directory:** `drug-label-ocr`
+   - **Root Directory:** `./`
    - **Build Command:** `npm install && npm run build`
    - **Publish Directory:** `dist`
 6. **กด "Create Static Site"**
-7. **รอ deployment เสร็จ (ประมาณ 2-3 นาที)**
-8. **ได้ลิงก์เว็บทันที!**
+7. **ได้ลิงก์เว็บทันที!**
 
-### Vercel (ทางเลือก)
+### ข้อดีของ Vercel
 
-1. **Fork repository** นี้ไปยัง GitHub ของคุณ
-2. **เข้า [Vercel](https://vercel.com/)**
-3. **เชื่อมต่อกับ GitHub**
-4. **เลือก repository และ deploy**
-5. **ได้ลิงก์เว็บทันที!**
-
-### ข้อดีของ Render
-
-* **Free Tier** ที่ดีกว่า
-* **Custom Domain** ฟรี
-* **SSL Certificate** อัตโนมัติ
-* **Global CDN** สำหรับความเร็ว
-* **Auto-deploy** เมื่อ push code ใหม่
+* **OCR Performance** - รองรับ WebAssembly ได้ดี
+* **TypeScript** - Native support
+* **React** - Optimized for React apps
+* **Edge Functions** - สำหรับ OCR processing
+* **Global CDN** - Performance ดีมาก
+* **Free Tier** - 100GB bandwidth/month
+* **Auto-deploy** - จาก GitHub
 
 ## 🔧 การพัฒนา
 
@@ -183,6 +191,7 @@ npm run lint         # ตรวจสอบ code quality
 - [x] **Smooth Animations** - ✅ เสร็จสิ้น
 - [x] **Python Tools** - ✅ เสร็จสิ้น
 - [x] **Deployment Ready** - ✅ เสร็จสิ้น
+- [x] **Vercel Migration** - ✅ เสร็จสิ้น
 - [ ] **Backend API** - 🔄 กำลังพัฒนา
 - [ ] **Database Integration** - 🔄 กำลังพัฒนา
 
@@ -208,12 +217,13 @@ npm run lint         # ตรวจสอบ code quality
 * [React](https://reactjs.org/) - Frontend Framework
 * [Material-UI](https://mui.com/) - UI Components
 * [Vite](https://vitejs.dev/) - Build Tool
-* [Render](https://render.com/) - Hosting Platform
+* [Vercel](https://vercel.com/) - Hosting Platform (แนะนำ)
+* [Render](https://render.com/) - Hosting Platform (ทางเลือก)
 
 ---
 
 **⭐ ถ้าชอบโปรเจกต์นี้ กรุณาให้ Star และ Fork เพื่อเป็นกำลังใจในการพัฒนา! ⭐**
 
-## 🚀 Deploy บน Render ทันที!
+## 🚀 Deploy บน Vercel ทันที!
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Feeldown/Drug_PhamacyApp&ref=drug-label-ocr) 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Feeldown/Phamacy-ocr-app) 

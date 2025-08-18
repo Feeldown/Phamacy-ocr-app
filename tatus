@@ -1,0 +1,4 @@
+[33m490a2ab[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Add deployment summary and final preparations for Render
+[33m96a623c[m Add Render deployment checklist
+[33mf39385b[m Fix dependencies and update for Render deployment
+[33m93c57b3[m Initial commit: Drug Label OCR App with React + TypeScript + OCR features
