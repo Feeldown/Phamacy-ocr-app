@@ -75,7 +75,7 @@ const SearchInput = () => {
     };
 
     return (
-        <div className="search-page">
+        <div className="search-page page-container">
             <header className="page-header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <button onClick={handleBack} style={{ fontSize: 24, background: 'none', border: 'none', cursor: 'pointer', marginRight: 8 }}>←</button>
                 <h1 className="header-title" style={{ flex: 1 }}>ค้นหายา</h1>

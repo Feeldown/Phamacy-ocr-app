@@ -1,85 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Box, Container, Button } from '@mui/material';
 import { Home, Search, Category, Camera, Help } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-const navItems = [
-  { icon: Home, label: 'หน้าแรก', path: '/' },
-  { icon: Search, label: 'ค้นหา', path: '/search' },
-  { icon: Camera, label: 'สแกน', path: '/scan' },
-  { icon: Category, label: 'หมวดหมู่', path: '/categories' },
-  { icon: Help, label: 'ช่วยเหลือ', path: '/help' },
-];
 
 const BottomNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [clickedItem, setClickedItem] = useState<string | null>(null);
 
-  const handleNavigation = async (path: string) => {
+  // เพิ่ม useEffect เพื่อให้แน่ใจว่าทุกครั้งที่เปลี่ยนหน้า จะเด้งขึ้นไปด้านบนสุด (ปรับปรุงให้ไม่เด้งแปลก)
+  useEffect(() => {
+    // ใช้วิธีที่นุ่มนวลกว่า
+    window.scrollTo(0, 0);
+    if (document.documentElement) {
+      document.documentElement.scrollTop = 0;
+    }
+    if (document.body) {
+      document.body.scrollTop = 0;
+    }
+  }, [location.pathname]);
+
+
+
+  // ใช้ useMemo เพื่อ cache navItems
+  const navItems = useMemo(() => [
+    { icon: Home, label: 'หน้าแรก', path: '/' },
+    { icon: Search, label: 'ค้นหา', path: '/search' },
+    { icon: Camera, label: 'สแกน', path: '/scan' },
+    { icon: Category, label: 'หมวดหมู่', path: '/categories' },
+    { icon: Help, label: 'ช่วยเหลือ', path: '/help' },
+  ], []);
+
+  // ใช้ useCallback เพื่อ optimize performance (ปรับปรุงให้ไม่เด้งแปลก)
+  const handleNavigation = useCallback(async (path: string) => {
+    // เพิ่ม ripple effect
+    setClickedItem(path);
+    setTimeout(() => setClickedItem(null), 300);
+    
     // ถ้าเป็นหน้าเดิม ให้เด้งไปข้างบนเท่านั้น
     if (location.pathname === path) {
-      // เพิ่ม ripple effect และ smooth scroll
-      setClickedItem(path);
-      setTimeout(() => setClickedItem(null), 300);
-      
-      // Smooth scroll ไปข้างบนด้วย easing function ที่สวยงาม
-      const startPosition = window.pageYOffset;
-      const targetPosition = 0;
-      const distance = targetPosition - startPosition;
-      const duration = 800;
-      const startTime = performance.now();
-      
-      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-      
-      const animateScroll = (currentTime: number) => {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = easeOutCubic(progress);
-        
-        window.scrollTo(0, startPosition + distance * easedProgress);
-        
-        if (progress < 1) {
-          requestAnimationFrame(animateScroll);
-        }
-      };
-      
-      requestAnimationFrame(animateScroll);
+      // ใช้วิธีที่นุ่มนวลกว่า
+      window.scrollTo(0, 0);
+      if (document.documentElement) {
+        document.documentElement.scrollTop = 0;
+      }
+      if (document.body) {
+        document.body.scrollTop = 0;
+      }
       return;
     }
     
-    // ถ้าเป็นหน้าใหม่ ให้เด้งไปข้างบนก่อน แล้วค่อย navigate
-    setClickedItem(path);
-    
-    // Smooth scroll ไปข้างบน
-    const startPosition = window.pageYOffset;
-    const targetPosition = 0;
-    const distance = targetPosition - startPosition;
-    const duration = 600;
-    const startTime = performance.now();
-    
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-    
-    const animateScroll = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutCubic(progress);
-      
-      window.scrollTo(0, startPosition + distance * easedProgress);
-      
-      if (progress < 1) {
-        requestAnimationFrame(animateScroll);
-      } else {
-        // เมื่อ scroll เสร็จแล้วค่อย navigate
-        setTimeout(() => {
-          navigate(path);
-          setClickedItem(null);
-        }, 100);
-      }
-    };
-    
-    requestAnimationFrame(animateScroll);
-  };
+    // ถ้าเป็นหน้าใหม่ ให้ navigate ทันที (ลด delay)
+    navigate(path);
+    setClickedItem(null);
+  }, [location.pathname, navigate]);
 
   return (
     <Box
@@ -89,14 +63,15 @@ const BottomNav: React.FC = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        background: 'rgba(255, 255, 255, 0.95)',
+        background: 'rgba(255, 255, 255, 0.98)',
         borderTop: '1px solid',
-        borderColor: 'divider',
-        padding: '12px 0',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-        backdropFilter: 'blur(8px)',
+        borderColor: 'rgba(0, 0, 0, 0.08)',
+        padding: '16px 0',
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+        backdropFilter: 'blur(20px)',
         zIndex: 1000,
-        animation: 'slideUp 0.3s ease-out',
+        height: '88px',
+        animation: 'slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         '@keyframes slideUp': {
           '0%': {
             transform: 'translateY(100%)',
@@ -115,7 +90,9 @@ const BottomNav: React.FC = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          gap: 1,
+          gap: 2,
+          height: '100%',
+          px: { xs: 2, sm: 3 },
         }}
       >
         {navItems.map((item, index) => {
@@ -131,22 +108,23 @@ const BottomNav: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: 0.5,
-                minWidth: 64,
+                gap: 0.75,
+                minWidth: 72,
                 flex: 1,
                 color: isActive ? 'primary.main' : 'text.secondary',
-                bgcolor: isActive ? 'primary.light' : 'transparent',
-                borderRadius: 2,
+                bgcolor: isActive ? 'rgba(66, 99, 235, 0.1)' : 'transparent',
+                borderRadius: 3,
+                padding: '12px 8px',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                transform: isClicked ? 'scale(0.9)' : 'scale(1)',
-                animation: `fadeInUp 0.4s ease-out ${index * 0.1}s both`,
+                transform: isClicked ? 'scale(0.95)' : 'scale(1)',
+                animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
                 '&:hover': {
-                  bgcolor: isActive ? 'primary.light' : 'action.hover',
-                  transform: 'scale(1.05)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  bgcolor: isActive ? 'rgba(66, 99, 235, 0.15)' : 'rgba(0, 0, 0, 0.04)',
+                  transform: 'scale(1.02)',
+                  boxShadow: '0 4px 16px rgba(66, 99, 235, 0.15)',
                 },
                 '&:active': {
-                  transform: 'scale(0.95)',
+                  transform: 'scale(0.98)',
                   transition: 'transform 0.1s ease-out',
                 },
                 position: 'relative',
@@ -198,40 +176,42 @@ const BottomNav: React.FC = () => {
                 },
               }}
             >
-              <Icon 
-                sx={{ 
-                  fontSize: 20, 
-                  mb: 0.25,
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  transform: isActive ? 'scale(1.1)' : 'scale(1)',
-                  filter: isActive ? 'drop-shadow(0 2px 4px rgba(66, 99, 235, 0.3))' : 'none',
-                  animation: isClicked ? 'bounce 0.3s ease-out' : 'none',
-                  '@keyframes bounce': {
-                    '0%, 20%, 50%, 80%, 100%': {
-                      transform: 'translateY(0)',
-                    },
-                    '40%': {
-                      transform: 'translateY(-8px)',
-                    },
-                    '60%': {
-                      transform: 'translateY(-4px)',
-                    },
-                  },
-                }} 
-              />
-              <Box
-                component="span"
-                sx={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  lineHeight: 1.2,
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                }}
-              >
-                {item.label}
-              </Box>
+                             <Icon 
+                 sx={{ 
+                   fontSize: 24, 
+                   mb: 0.5,
+                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                   transform: isActive ? 'scale(1.15)' : 'scale(1)',
+                   filter: isActive ? 'drop-shadow(0 2px 6px rgba(66, 99, 235, 0.4))' : 'none',
+                   animation: isClicked ? 'bounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)' : 'none',
+                   '@keyframes bounce': {
+                     '0%, 20%, 50%, 80%, 100%': {
+                       transform: 'translateY(0) scale(1)',
+                     },
+                     '40%': {
+                       transform: 'translateY(-6px) scale(1.1)',
+                     },
+                     '60%': {
+                       transform: 'translateY(-3px) scale(1.05)',
+                     },
+                   },
+                 }} 
+               />
+                             <Box
+                 component="span"
+                 sx={{
+                   fontSize: 12,
+                   fontWeight: 600,
+                   lineHeight: 1.2,
+                   whiteSpace: 'nowrap',
+                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                   transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                   color: isActive ? 'primary.main' : 'text.secondary',
+                   letterSpacing: '0.2px',
+                 }}
+               >
+                 {item.label}
+               </Box>
             </Button>
           );
         })}

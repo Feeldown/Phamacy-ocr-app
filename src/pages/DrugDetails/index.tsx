@@ -117,7 +117,7 @@ const DrugDetailsPage = () => {
     const drugIcon = drug.รูปแบบยา.includes('เม็ด') ? '💊' : drug.รูปแบบยา.includes('น้ำ') ? '🧪' : '🩹';
 
     return (
-        <div className="drug-details-page">
+        <div className="drug-details-page page-container">
             <header className="header">
                 <button onClick={() => navigate(-1)} className="back-btn">←</button>
                 <h1 className="drug-title">{drug.ชื่อการค้า}</h1>
@@ -134,7 +134,7 @@ const DrugDetailsPage = () => {
                     <InfoCard
                         title="ข้อมูลทั่วไป"
                         icon="💊"
-                        content={[`ชื่อสามัญ: ${drug.ชื่อการค้า}`, `ชื่อการค้า: ${drug.ชื่อสามัญ}`, `รูปแบบยา: ${drug.รูปแบบยา}`]}
+                        content={[`ชื่อสามัญ: ${drug.ชื่อสามัญ}`, `ชื่อการค้า: ${drug.ชื่อการค้า}`, `รูปแบบยา: ${drug.รูปแบบยา}`]}
                     />
                 </section>
 

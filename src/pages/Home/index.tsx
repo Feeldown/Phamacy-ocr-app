@@ -37,7 +37,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="home-page">
+    <div className="home-page page-container">
       {/* Header */}
       <header className="home-header">
         <h1 className="app-title">MedSearch</h1>

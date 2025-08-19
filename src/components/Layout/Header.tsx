@@ -14,22 +14,24 @@ const Header: React.FC<HeaderProps> = ({
     <Box 
       component="header" 
       sx={{
-        padding: '40px 24px',
-        background: 'white',
+        padding: '48px 24px',
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
         borderBottom: '1px solid',
-        borderColor: 'divider',
+        borderColor: 'rgba(66, 99, 235, 0.1)',
         position: 'relative',
         textAlign: 'center',
+        boxShadow: '0 2px 20px rgba(66, 99, 235, 0.08)',
         '&::after': {
           content: '""',
           position: 'absolute',
           bottom: -1,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: 60,
+          width: 80,
           height: 4,
-          bgcolor: 'primary.main',
-          borderRadius: 2,
+          background: 'linear-gradient(90deg, #4263eb, #5a7cfa)',
+          borderRadius: 4,
+          boxShadow: '0 2px 8px rgba(66, 99, 235, 0.3)',
         }
       }}
     >
@@ -37,11 +39,15 @@ const Header: React.FC<HeaderProps> = ({
         <Typography 
           variant="h1" 
           sx={{
-            fontSize: 36,
-            fontWeight: 700,
-            color: 'primary.main',
-            mb: 1,
-            letterSpacing: '-0.5px',
+            fontSize: 42,
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, #4263eb 0%, #5a7cfa 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            mb: 1.5,
+            letterSpacing: '-1px',
+            textShadow: '0 2px 4px rgba(66, 99, 235, 0.1)',
           }}
         >
           {title}
@@ -49,9 +55,10 @@ const Header: React.FC<HeaderProps> = ({
         <Typography 
           variant="subtitle1"
           sx={{
-            fontSize: 16,
+            fontSize: 18,
             color: 'text.secondary',
-            fontWeight: 500,
+            fontWeight: 600,
+            letterSpacing: '0.2px',
           }}
         >
           {subtitle}

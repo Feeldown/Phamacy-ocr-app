@@ -1,0 +1,160 @@
+/* Scroll to Top Utilities */
+html {
+  scroll-behavior: auto;
+}
+
+/* Force scroll to top when needed */
+html, body {
+  scroll-behavior: auto !important;
+  scroll-padding-top: 0 !important;
+  scroll-padding-bottom: 0 !important;
+  scroll-snap-type: none !important;
+  scroll-restoration: auto !important;
+}
+
+/* Ensure content is not hidden behind bottom navigation */
+body {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+/* Fix for content being hidden behind bottom navigation */
+.main-content,
+.drug-details-page,
+.search-page,
+.scan-page,
+.categories-page,
+.help-page {
+  padding-bottom: 100px !important;
+  min-height: calc(100vh - 100px);
+}
+
+/* Ensure proper spacing for all pages */
+.page-container {
+  padding-bottom: 100px;
+  min-height: calc(100vh - 100px);
+}
+
+/* Custom scrollbar for better visual feedback */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(66, 99, 235, 0.3);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(66, 99, 235, 0.5);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(66, 99, 235, 0.7);
+  background-clip: content-box;
+}
+
+/* Smooth scroll animation classes */
+.scroll-to-top {
+  animation: scrollToTop 0.5s ease-out;
+}
+
+@keyframes scrollToTop {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Ensure content is properly positioned for smooth scrolling */
+body {
+  scroll-padding-top: 0;
+}
+
+/* Optimize scroll performance */
+* {
+  scroll-behavior: auto;
+}
+
+/* Custom easing functions for smooth scrolling */
+.scroll-ease-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ensure proper scroll restoration */
+.scroll-restore {
+  scroll-behavior: auto;
+}
+
+/* Force scroll to top when needed */
+.force-scroll-top {
+  scroll-behavior: auto !important;
+  scroll-top: 0 !important;
+}
+
+/* Additional force scroll utilities */
+.force-scroll-top-strong {
+  scroll-behavior: auto !important;
+  scroll-top: 0 !important;
+  scroll-padding-top: 0 !important;
+  scroll-padding-bottom: 0 !important;
+}
+
+/* Additional scroll to top utilities */
+.scroll-to-top-force {
+  scroll-behavior: auto !important;
+  scroll-top: 0 !important;
+}
+
+/* Ensure all pages start at top */
+.page-container {
+  scroll-behavior: auto !important;
+  scroll-padding-top: 0 !important;
+  scroll-padding-bottom: 0 !important;
+}
+
+/* Force all pages to start at top */
+.page-container,
+.drug-details-page,
+.search-page,
+.scan-page,
+.categories-page,
+.help-page,
+.home-page {
+  scroll-behavior: auto !important;
+  scroll-padding-top: 0 !important;
+  scroll-padding-bottom: 0 !important;
+}
+
+/* Force scroll restoration */
+.scroll-restore-force {
+  scroll-behavior: auto !important;
+  scroll-restoration: auto !important;
+}
+
+/* Prevent scroll interference */
+* {
+  scroll-behavior: auto !important;
+  scroll-padding-top: 0 !important;
+  scroll-padding-bottom: 0 !important;
+}
+
+/* Ensure body scrolls to top */
+body.scroll-to-top {
+  scroll-top: 0;
+  scroll-behavior: auto;
+}

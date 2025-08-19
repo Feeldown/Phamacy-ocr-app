@@ -43,7 +43,7 @@ const CategoriesPage = () => {
     }, []);
 
     return (
-        <div className="categories-page">
+        <div className="categories-page page-container">
             <header className="page-header">
                 <h1 className="header-title">หมวดหมู่ยา</h1>
                 <p className="header-subtitle">ค้นหายาตามรูปแบบยา</p>

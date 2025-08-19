@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createWorker } from 'tesseract.js';
 import { Box, CircularProgress, Typography, Paper, Chip, Stack } from '@mui/material';
 
@@ -117,8 +117,9 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true;
+    let worker: any = null;
 
     const doOCR = async () => {
       try {
@@ -137,7 +138,7 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
 
         try {
           // สร้าง Tesseract worker
-          const worker = await createWorker();
+          worker = await createWorker();
 
           setProgress(60);
           
@@ -149,8 +150,6 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
             setStatus('เสร็จสิ้น');
             onResult(result);
           }
-
-          await worker.terminate();
 
         } catch (tesseractError) {
           console.log('Tesseract failed, using mock OCR:', tesseractError);
@@ -173,6 +172,9 @@ const OCRProcessor: React.FC<OCRProcessorProps> = ({ imageSrc, onResult }) => {
 
     return () => {
       isMounted = false;
+      if (worker) {
+        worker.terminate().catch(console.error);
+      }
     };
   }, [imageSrc, onResult]);
 

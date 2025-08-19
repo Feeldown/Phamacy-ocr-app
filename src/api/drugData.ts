@@ -135,21 +135,52 @@ export const searchDrugsEnhanced = async (
 
 export const getSimilarDrugs = async (currentDrug: DrugData, limit: number = 5): Promise<DrugData[]> => {
   const all = await getAllDrugs();
+  
+  // ค้นหายาที่มีรูปแบบเดียวกัน
   const sameFormDrugs = all.filter(
     (drug) =>
       drug.รูปแบบยา === currentDrug.รูปแบบยา &&
       drug.ชื่อการค้า !== currentDrug.ชื่อการค้า
   );
+  
+  // ค้นหายาที่มีประโยชน์คล้ายกัน
   const similarUsesDrugs = all.filter(
     (drug) =>
       drug.ชื่อการค้า !== currentDrug.ชื่อการค้า &&
+      drug['ยานี้ใช้สำหรับ'] &&
+      currentDrug['ยานี้ใช้สำหรับ'] &&
       drug['ยานี้ใช้สำหรับ'].toLowerCase().includes(
         currentDrug['ยานี้ใช้สำหรับ'].toLowerCase().split(' ')[0]
       )
   );
+  
+  // รวมและลบตัวซ้ำ
   const combined = [...sameFormDrugs, ...similarUsesDrugs];
   const unique = Array.from(new Map(combined.map(drug => [drug.ชื่อการค้า, drug])).values());
-  return unique.slice(0, limit);
+  
+  // เรียงลำดับตามความคล้ายกัน
+  const scored = unique.map(drug => {
+    let score = 0;
+    
+    // ให้คะแนนตามรูปแบบยา
+    if (drug.รูปแบบยา === currentDrug.รูปแบบยา) score += 3;
+    
+    // ให้คะแนนตามประโยชน์
+    if (drug['ยานี้ใช้สำหรับ'] && currentDrug['ยานี้ใช้สำหรับ']) {
+      const currentWords = currentDrug['ยานี้ใช้สำหรับ'].toLowerCase().split(/\s+/);
+      const drugWords = drug['ยานี้ใช้สำหรับ'].toLowerCase().split(/\s+/);
+      const commonWords = currentWords.filter(word => drugWords.includes(word));
+      score += commonWords.length;
+    }
+    
+    return { drug, score };
+  });
+  
+  // เรียงตามคะแนนและคืนค่าตามจำนวนที่ต้องการ
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(item => item.drug);
 };
 
 export const getDrugsByFormAsync = async (form: string): Promise<DrugData[]> => {

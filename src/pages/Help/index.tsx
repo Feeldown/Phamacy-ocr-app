@@ -4,7 +4,7 @@ import './Help.css';
 
 const HelpPage = () => {
     return (
-        <div className="help-page">
+        <div className="help-page page-container">
             <header className="page-header">
                 <h1 className="header-title">ช่วยเหลือ</h1>
                 <p className="header-subtitle">คำแนะนำในการใช้งานแอปพลิเคชัน</p>
