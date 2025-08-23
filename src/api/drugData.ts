@@ -213,4 +213,157 @@ export const searchDrugsSmart = async (query: string, drugList?: DrugData[]): Pr
     .filter(item => item.matchCount > 0)
     .sort((a, b) => b.matchCount - a.matchCount)
     .map(item => item.drug);
+};
+
+// ฟังก์ชันค้นหาใหม่ที่รองรับ case-insensitive และ fuzzy search
+export const searchDrugsAdvanced = async (
+  query: string, 
+  options: {
+    caseSensitive?: boolean;
+    fuzzy?: boolean;
+    searchFields?: ('name' | 'generic' | 'brand' | 'uses' | 'sideEffects')[];
+    limit?: number;
+  } = {}
+): Promise<DrugData[]> => {
+  const {
+    caseSensitive = false,
+    fuzzy = true,
+    searchFields = ['name', 'generic', 'brand', 'uses', 'sideEffects'],
+    limit
+  } = options;
+
+  const all = await getAllDrugs();
+  
+  if (!query.trim()) return [];
+
+  const normalizedQuery = caseSensitive ? query.trim() : query.trim().toLowerCase();
+  const keywords = normalizedQuery.split(/\s+/).filter(Boolean);
+
+  const scored = all.map(drug => {
+    let score = 0;
+    let exactMatches = 0;
+    let partialMatches = 0;
+
+    keywords.forEach(keyword => {
+      // ค้นหาในชื่อสามัญ
+      if (searchFields.includes('generic')) {
+        const genericName = caseSensitive ? drug.ชื่อสามัญ : drug.ชื่อสามัญ.toLowerCase();
+        if (genericName === keyword) {
+          score += 100; // Exact match ได้คะแนนสูงสุด
+          exactMatches++;
+        } else if (genericName.startsWith(keyword)) {
+          score += 50; // ขึ้นต้นด้วยคำค้นหา
+          partialMatches++;
+        } else if (genericName.includes(keyword)) {
+          score += 10; // มีคำค้นหาอยู่ในชื่อ
+          partialMatches++;
+        }
+      }
+
+      // ค้นหาในชื่อการค้า
+      if (searchFields.includes('brand')) {
+        const brandName = caseSensitive ? drug.ชื่อการค้า : drug.ชื่อการค้า.toLowerCase();
+        if (brandName === keyword) {
+          score += 100;
+          exactMatches++;
+        } else if (brandName.startsWith(keyword)) {
+          score += 50;
+          partialMatches++;
+        } else if (brandName.includes(keyword)) {
+          score += 10;
+          partialMatches++;
+        }
+      }
+
+      // ค้นหาในสรรพคุณ
+      if (searchFields.includes('uses') && drug['ยานี้ใช้สำหรับ']) {
+        const uses = caseSensitive ? drug['ยานี้ใช้สำหรับ'] : drug['ยานี้ใช้สำหรับ'].toLowerCase();
+        if (uses.includes(keyword)) {
+          score += 5;
+          partialMatches++;
+        }
+      }
+
+      // ค้นหาในอาการไม่พึงประสงค์
+      if (searchFields.includes('sideEffects') && drug['อาการไม่พึงประสงค์ทั่วไป']) {
+        const sideEffects = caseSensitive ? drug['อาการไม่พึงประสงค์ทั่วไป'] : drug['อาการไม่พึงประสงค์ทั่วไป'].toLowerCase();
+        if (sideEffects.includes(keyword)) {
+          score += 3;
+          partialMatches++;
+        }
+      }
+    });
+
+    // Bonus สำหรับการจับคู่หลายคำ
+    if (keywords.length > 1) {
+      score += Math.min(exactMatches, keywords.length) * 20;
+      score += Math.min(partialMatches, keywords.length) * 5;
+    }
+
+    return { drug, score, exactMatches, partialMatches };
+  });
+
+  // กรองและเรียงลำดับผลลัพธ์
+  const filtered = scored
+    .filter(item => item.score > 0)
+    .sort((a, b) => {
+      // เรียงตามคะแนนรวม
+      if (b.score !== a.score) return b.score - a.score;
+      
+      // ถ้าคะแนนเท่ากัน เรียงตามจำนวน exact matches
+      if (b.exactMatches !== a.exactMatches) return b.exactMatches - a.exactMatches;
+      
+      // ถ้า exact matches เท่ากัน เรียงตามจำนวน partial matches
+      if (b.partialMatches !== a.partialMatches) return b.partialMatches - a.partialMatches;
+      
+      // สุดท้ายเรียงตามชื่อการค้า
+      return a.drug.ชื่อการค้า.localeCompare(b.drug.ชื่อการค้า, 'th');
+    });
+
+  // คืนค่าตามจำนวนที่ต้องการ
+  if (limit) {
+    return filtered.slice(0, limit).map(item => item.drug);
+  }
+
+  return filtered.map(item => item.drug);
+};
+
+// ฟังก์ชันสำหรับค้นหาคำแนะนำ (autocomplete)
+export const getSearchSuggestions = async (
+  partialQuery: string, 
+  limit: number = 10
+): Promise<string[]> => {
+  if (!partialQuery.trim() || partialQuery.trim().length < 2) return [];
+
+  const all = await getAllDrugs();
+  const normalizedQuery = partialQuery.trim().toLowerCase();
+  
+  const suggestions = new Set<string>();
+
+  all.forEach(drug => {
+    // เพิ่มชื่อการค้าที่ตรงกับคำค้นหา
+    if (drug.ชื่อการค้า.toLowerCase().includes(normalizedQuery)) {
+      suggestions.add(drug.ชื่อการค้า);
+    }
+    
+    // เพิ่มชื่อสามัญที่ตรงกับคำค้นหา
+    if (drug.ชื่อสามัญ.toLowerCase().includes(normalizedQuery)) {
+      suggestions.add(drug.ชื่อสามัญ);
+    }
+  });
+
+  // เรียงลำดับและคืนค่า
+  return Array.from(suggestions)
+    .sort((a, b) => {
+      // ให้ความสำคัญกับคำที่ขึ้นต้นด้วยคำค้นหา
+      const aStartsWith = a.toLowerCase().startsWith(normalizedQuery);
+      const bStartsWith = b.toLowerCase().startsWith(normalizedQuery);
+      
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+      
+      // ถ้าทั้งคู่ขึ้นต้นด้วยคำค้นหาหรือไม่ขึ้นต้น ให้เรียงตามความยาว
+      return a.length - b.length;
+    })
+    .slice(0, limit);
 }; 
